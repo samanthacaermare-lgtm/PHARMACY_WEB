@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PHARMA-SEE | See it. Reserve it. Pick it up.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1E293B;--brand:#008080;--sage:#81C784;--amber:#FFB74D;--card:#fff;--line:#cfe3ee;--muted:#475569;--on:#fff;--bg:linear-gradient(160deg,#aed8f7 0%,#cde8fb 50%,#e6f4fd 100%)}
+[data-theme=dark]{--ink:#E6EDF0;--brand:#4DB6AC;--card:#1E1E1E;--line:#33403f;--muted:#aab6b9;--on:#121212;--bg:linear-gradient(160deg,#121212,#1E1E1E)}
+*{box-sizing:border-box}
+body{margin:0;font:1.0625rem/1.6 "Atkinson Hyperlegible",system-ui,sans-serif;color:var(--ink);background:var(--bg) fixed;min-height:100vh}
+a{color:var(--brand)}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+header{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:.75rem;padding:.6rem 1rem;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:.6rem;text-decoration:none;color:var(--ink);font-weight:700}
+.brand img{height:46px;width:46px;border-radius:50%;background:#fff}.brand small{display:block;font-weight:400;color:var(--muted);font-size:.8rem}
+nav{margin-left:auto}nav ul{display:flex;gap:.25rem;list-style:none;margin:0;padding:0;flex-wrap:wrap}
+nav a{display:block;padding:.4rem .7rem;border-radius:999px;text-decoration:none;color:var(--ink);font-size:.95rem}
+nav a.on,nav a:hover{background:var(--brand);color:var(--on)}
+.ib{background:var(--card);color:var(--ink);border:2px solid var(--line);border-radius:999px;min-width:44px;height:44px;font-size:1.1rem;cursor:pointer;position:relative}
+#badge{position:absolute;top:-6px;right:-6px;background:var(--amber);color:#1E293B;border-radius:999px;font-size:.75rem;font-weight:700;min-width:22px;padding:0 5px}
+#menu{display:none}
+main{max-width:1100px;margin:0 auto;padding:1.5rem 1rem 6rem}
+.view h1{font-size:clamp(1.8rem,5vw,2.8rem);line-height:1.15;margin:.2rem 0 .5rem}
+h2{margin:1.6rem 0 .6rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1rem;box-shadow:0 6px 18px rgba(30,41,59,.08)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:1rem}
+.hero{padding:2rem 0}.hero p{font-size:1.2rem;max-width:40rem;color:var(--muted)}
+.row{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
+.btn{background:var(--brand);color:var(--on);border:2px solid var(--brand);border-radius:999px;padding:.55rem 1.2rem;font:inherit;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block}
+.btn.alt{background:transparent;color:var(--brand)}.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn:hover:not(:disabled){filter:brightness(1.08)}
+label{display:block;font-weight:700;margin:.6rem 0 .2rem}
+input,select,textarea{font:inherit;width:100%;padding:.55rem .7rem;border:2px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink)}
+td input,td select{padding:.3rem .4rem;min-width:80px}
+.form2{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0 1rem}
+.err{color:#b3261e;font-weight:700}[data-theme=dark] .err{color:#ff8a80}
+.ok{color:#1b6e2f;font-weight:700}[data-theme=dark] .ok{color:var(--sage)}
+.pimg{width:100%;aspect-ratio:1;object-fit:contain;background:#f1f8fd;border-radius:12px}
+.badge{display:inline-block;border-radius:999px;padding:.1rem .7rem;font-size:.85rem;font-weight:700;color:#1E293B}
+.In{background:var(--sage)}.Low{background:var(--amber)}.Out{background:#ffcdd2}
+.price{font-size:1.3rem;font-weight:700;color:var(--brand)}.meta{font-size:.88rem;color:var(--muted)}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse}th,td{padding:.5rem;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+td img{width:44px;height:44px;object-fit:contain;border-radius:8px;background:#f1f8fd}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem}.metrics b{font-size:2rem;color:var(--brand);display:block}
+.alert{border-left:6px solid var(--amber);background:var(--card);padding:.7rem 1rem;border-radius:10px;margin:.5rem 0}
+.banner{background:var(--brand);color:var(--on);border-radius:16px;padding:1.5rem;margin-top:2rem}.banner .btn{background:var(--card);color:var(--ink);border-color:var(--card)}
+#drawer{position:fixed;top:0;right:0;height:100%;width:min(420px,100%);background:var(--card);z-index:40;transform:translateX(105%);transition:transform .25s;overflow-y:auto;padding:1rem;box-shadow:-8px 0 24px rgba(0,0,0,.2)}
+#drawer.open{transform:none}#clist{list-style:none;padding:0}
+.crow{display:grid;grid-template-columns:48px 1fr auto auto;gap:.5rem;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--line)}
+.crow img{width:48px;height:48px;object-fit:contain}.qty{display:flex;gap:.3rem;align-items:center}
+.qty button,.x{width:36px;height:36px;border-radius:50%;border:2px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;font-size:1rem}
+dialog{border:0;border-radius:16px;padding:1.5rem;max-width:440px;background:var(--card);color:var(--ink)}dialog::backdrop{background:rgba(0,0,0,.5)}
+#chatBtn{position:fixed;right:1rem;bottom:1rem;z-index:30;border-radius:999px;padding:.8rem 1.1rem}
+#chat{position:fixed;right:1rem;bottom:4.6rem;z-index:30;width:min(340px,calc(100% - 2rem));display:none;flex-direction:column}
+#chat.open{display:flex}#log{height:240px;overflow-y:auto;margin:.5rem 0}
+.m{padding:.4rem .7rem;border-radius:12px;margin:.3rem 0;max-width:88%}.m.a{background:var(--line)}.m.u{background:var(--brand);color:var(--on);margin-left:auto}
+footer{background:var(--card);border-top:1px solid var(--line);padding:1.5rem 1rem 5rem;text-align:center;font-size:.95rem}
+.view[hidden]{display:none}
+@media(max-width:860px){#menu{display:inline-block;margin-left:auto}nav{display:none;width:100%;margin:0}nav.open{display:block}nav ul{flex-direction:column}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <a class="brand" href="#home" aria-label="PHARMA-SEE home"><img src="logo/logo.jpg" alt="PHARMA-SEE logo" onerror="this.style.display='none'"><span>PHARMA-SEE<small>See it. Reserve it. Pick it up.</small></span></a>
+  <button class="ib" id="menu" aria-label="Open menu" aria-expanded="false">☰</button>
+  <nav aria-label="Main navigation"><ul>
+    <li><a href="#home">Home</a></li><li><a href="#dashboard">Customer Dashboard</a></li><li><a href="#admin">Admin Dashboard</a></li>
+    <li><a href="#catalog">Search &amp; Reserve</a></li><li><a href="#tools">Refill &amp; Price Tools</a></li><li><a href="#about">About</a></li><li><a href="#contact">Contact</a></li>
+  </ul></nav>
+  <button class="ib" id="theme" aria-label="Switch to dark mode">🌙</button>
+  <button class="ib" id="cartBtn" aria-label="Open cart">🛒<span id="badge">0</span></button>
+</header>
+
+<main>
+<section class="view" id="home" aria-labelledby="h-home">
+  <div class="hero"><h1 id="h-home" tabindex="-1">See it. Reserve it. Pick it up.</h1>
+  <p>Check medicine availability, reserve your medicines, and pick them up without the long wait.</p>
+  <div class="row"><a class="btn" href="#catalog">Search Medicine</a><a class="btn alt" href="#catalog">Reserve Now</a><a class="btn alt" href="#dashboard">Go to Dashboard</a></div></div>
+  <div class="grid">
+    <article class="card"><h2>See it</h2><p>Search items and view live stock status and single fixed prices.</p></article>
+    <article class="card"><h2>Reserve it</h2><p>Add items to your cart and choose a pickup time.</p></article>
+    <article class="card"><h2>Pick it up</h2><p>Collect your reservation at the scheduled time without waiting in line.</p></article>
+  </div>
+  <h2>How it works</h2>
+  <ol class="card" style="padding-left:3rem"><li>Search for your item.</li><li>Check stock and exact price.</li><li>Add to Cart, reserve, and choose a pickup time.</li><li>Pick it up at PHARMA-SEE pharmacy.</li></ol>
+  <div class="grid">
+    <article class="card"><b>Patients and seniors</b><p>Know what is in stock before you travel.</p></article>
+    <article class="card"><b>Caregivers</b><p>Reserve for the person you care for and track refills.</p></article>
+    <article class="card"><b>Pharmacy administrators</b><p>Manage inventory and pickup requests in one place.</p></article>
+  </div>
+  <div class="banner"><h2 style="margin-top:0">Ready to make pharmacy visits easier?</h2><a class="btn" href="#dashboard">Go to Dashboard</a></div>
+</section>
+
+<section class="view" id="dashboard" aria-labelledby="h-dash" hidden>
+  <h1 id="h-dash" tabindex="-1">Welcome back, Customer</h1>
+  <div class="row"><a class="btn" href="#catalog">Search Medicine</a><button class="btn alt" data-open="cart">View Cart</button><a class="btn alt" href="#tools">Set Refill Reminder</a><button class="btn alt" data-open="chat">Ask Ante</button></div>
+  <h2>Notifications</h2><div id="notes"></div>
+  <h2>My Reservations</h2><div class="card tw"><table><thead><tr><th>Item</th><th>Qty</th><th>Total (PHP)</th><th>Pickup</th><th>Status</th><th></th></tr></thead><tbody id="myres"></tbody></table></div>
+  <h2>Refill Reminders</h2><div class="card tw"><table><thead><tr><th>Medicine</th><th>Days remaining</th><th>Next refill</th><th>Status</th></tr></thead><tbody id="myrem"></tbody></table></div>
+</section>
+
+<section class="view" id="admin" aria-labelledby="h-admin" hidden>
+  <h1 id="h-admin" tabindex="-1">Admin Dashboard</h1>
+  <div class="metrics" id="metrics"></div>
+  <h2>Add New Item</h2>
+  <form class="card" id="addf" novalidate><div class="form2">
+    <div><label for="a-img">Image URL (optional)</label><input id="a-img" placeholder="medicine/photo.jpg"></div>
+    <div><label for="a-name">Name</label><input id="a-name"></div>
+    <div><label for="a-gen">Generic name</label><input id="a-gen"></div>
+    <div><label for="a-cat">Category</label><select id="a-cat"></select></div>
+    <div><label for="a-form">Form</label><input id="a-form" placeholder="Tablet"></div>
+    <div><label for="a-str">Strength</label><input id="a-str" placeholder="500 mg"></div>
+    <div><label for="a-price">Fixed price (PHP)</label><input id="a-price" type="number" min="0" step="0.01"></div>
+    <div><label for="a-stock">Stock quantity</label><input id="a-stock" type="number" min="0"></div>
+    <div><label for="a-batch">Batch number</label><input id="a-batch"></div>
+    <div><label for="a-exp">Expiry date</label><input id="a-exp" type="month"></div>
+  </div><p class="err" id="a-err" role="alert"></p><button class="btn">Add item</button></form>
+  <h2>Inventory</h2><div class="card tw"><table><thead><tr><th>Image</th><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Status</th><th>Batch</th><th>Expiry</th></tr></thead><tbody id="inv"></tbody></table></div>
+  <h2>Order Fulfillment</h2><div class="card tw"><table><thead><tr><th>Item</th><th>Qty</th><th>Total</th><th>Pickup</th><th>Status</th></tr></thead><tbody id="ords"></tbody></table></div>
+  <h2>Inquiries</h2><div id="inqs"></div>
+</section>
+
+<section class="view" id="catalog" aria-labelledby="h-cat" hidden>
+  <h1 id="h-cat" tabindex="-1">Search &amp; Reserve</h1>
+  <div class="alert">Prescription items (such as antibiotics) require a physical or digital prescription at pickup.</div>
+  <div class="form2">
+    <div><label for="q">Search name, generic, brand, or category</label><input id="q" type="search" placeholder="e.g. paracetamol"></div>
+    <div><label for="fs">Stock status</label><select id="fs"><option value="">All</option><option>In Stock</option><option>Low Stock</option><option>Out of Stock</option></select></div>
+    <div><label for="ff">Dosage form</label><select id="ff"><option value="">All</option></select></div>
+  </div>
+  <p class="meta" id="count" aria-live="polite"></p>
+  <div class="grid" id="cards"></div>
+</section>
+
+<section class="view" id="tools" aria-labelledby="h-tools" hidden>
+  <h1 id="h-tools" tabindex="-1">Refill &amp; Price Tools</h1>
+  <h2>Refill Calculator</h2>
+  <form class="card" id="rf" novalidate><div class="form2">
+    <div><label for="r-name">Medicine name</label><input id="r-name"></div>
+    <div><label for="r-dpd">Doses per day</label><input id="r-dpd" type="number" min="1" value="1"></div>
+    <div><label for="r-time">First dose time</label><input id="r-time" type="time" value="08:00"></div>
+    <div><label for="r-units">Units remaining</label><input id="r-units" type="number" min="1"></div>
+    <div><label for="r-start">Start date</label><input id="r-start" type="date"></div>
+  </div><p class="err" id="r-err" role="alert"></p><button class="btn">Calculate</button>
+  <div id="r-out" aria-live="polite"></div></form>
+  <h2>Brand vs. Generic Price Comparison</h2>
+  <label for="srt">Sort by</label><select id="srt"><option value="save">Savings (highest first)</option><option value="brand">Brand price (lowest first)</option><option value="gen">Generic price (lowest first)</option></select>
+  <div class="card tw" style="margin-top:.8rem"><table><thead><tr><th>Brand</th><th>Generic option</th><th>Brand price</th><th>Generic price</th><th>You save</th></tr></thead><tbody id="pt"></tbody></table></div>
+</section>
+
+<section class="view" id="about" aria-labelledby="h-about" hidden>
+  <h1 id="h-about" tabindex="-1">About PHARMA-SEE</h1>
+  <p><b>Mission:</b> To make access to medicines easier, faster, and safer for every member of the community.</p>
+  <div class="grid"><article class="card"><h2>The problem</h2><p>Long waits, not knowing if a medicine is in stock, and trouble tracking refills.</p></article>
+  <article class="card"><h2>The solution</h2><p>See live stock and prices, reserve online, and pick up at a set time.</p></article></div>
+  <h2>Who we help</h2>
+  <div class="grid"><section class="card"><h3>Seniors</h3><p>Large text and simple steps.</p></section><section class="card"><h3>Caregivers</h3><p>Reserve and track for someone else.</p></section><section class="card"><h3>Parents</h3><p>Quick pickups with less waiting.</p></section><section class="card"><h3>Maintenance patients</h3><p>Refill reminders you can count on.</p></section><section class="card"><h3>Pharmacy staff</h3><p>Clear inventory and order tools.</p></section></div>
+  <div class="card" style="margin-top:1rem"><h2 style="margin-top:0">Meet Ante</h2><p>Ante is our virtual customer representative. Ask about store hours, pickup steps, stock, and prescriptions.</p><button class="btn" data-open="chat">Chat with Ante</button></div>
+</section>
+
+<section class="view" id="contact" aria-labelledby="h-contact" hidden>
+  <h1 id="h-contact" tabindex="-1">Contact</h1>
+  <div class="alert"><b>Emergency?</b> Call your local hospital emergency services right away.</div>
+  <div class="grid"><div class="card"><b>PHARMA-SEE Community Pharmacy</b><address>2F, "Dili Na Malimutan" Building, Beside the Sari-Sari Store That Always Has Load, Purok 5, Barangay Buhangin, Davao City, Davao del Sur, Philippines</address>
+  <p>Phone: <a href="tel:+639687315980">0968 731 598</a></p>
+  <p>Mon–Sat: 8:00 AM – 8:00 PM<br>Sun: 9:00 AM – 5:00 PM</p>
+  <p class="meta"><a href="mailto:samantha_caermare@sjp2cd.edu.ph">samantha_caermare@sjp2cd.edu.ph</a><br><a href="mailto:elle_cadorna@sjp2cd.edu.ph">elle_cadorna@sjp2cd.edu.ph</a><br><a href="mailto:angela_lariwan@sjp2cd.edu.ph">angela_lariwan@sjp2cd.edu.ph</a></p></div>
+  <form class="card" id="cf" novalidate>
+    <label for="c-name">Name</label><input id="c-name">
+    <label for="c-info">Email or mobile number</label><input id="c-info">
+    <label for="c-to">Recipient</label><select id="c-to"><option value="">Choose…</option><option>Pharmacist</option><option>Customer Service (Ante)</option></select>
+    <label for="c-topic">Topic</label><select id="c-topic"><option value="">Choose…</option><option>Stock question</option><option>Reservation</option><option>Refills</option><option>Other</option></select>
+    <label for="c-msg">Message</label><textarea id="c-msg" rows="4"></textarea>
+    <p class="err" id="c-err" role="alert"></p><p class="ok" id="c-ok" role="status"></p><button class="btn">Send message</button></form></div>
+</section>
+</main>
+
+<aside id="drawer" aria-label="Cart" aria-hidden="true">
+  <div class="row" style="justify-content:space-between"><h2 style="margin:0">Your cart</h2><button class="ib" data-close="cart" aria-label="Close cart">✕</button></div>
+  <ul id="clist"></ul>
+  <p>Subtotal: <b id="csub">₱0.00</b></p><p>Total: <b class="price" id="ctotal">₱0.00</b></p>
+  <h3>Reservation details</h3>
+  <form id="rsv" novalidate>
+    <label for="v-name">Full name</label><input id="v-name" autocomplete="name">
+    <label for="v-mob">Mobile number</label><input id="v-mob" inputmode="tel" placeholder="09xx xxx xxxx">
+    <label for="v-date">Pickup date</label><input id="v-date" type="date">
+    <label for="v-time">Pickup time</label><input id="v-time" type="time">
+    <label for="v-note">Notes (optional)</label><textarea id="v-note" rows="2"></textarea>
+    <div class="alert">Prescription items require a prescription at pickup.</div>
+    <p class="err" id="v-err" role="alert"></p><button class="btn">Reserve now</button>
+  </form>
+</aside>
+
+<dialog id="done"><h2 style="margin-top:0">Reservation received</h2><p>Your reservation has been received. Please pick up your medicine at your selected time. The pharmacy will confirm availability.</p><button class="btn" id="doneOk">OK</button></dialog>
+
+<button class="btn" id="chatBtn" aria-expanded="false">Chat with Ante</button>
+<section class="card" id="chat" aria-label="Chat with Ante">
+  <b>Ante, virtual customer representative</b>
+  <div id="log" role="log" aria-live="polite"></div>
+  <form id="cform" class="row" style="flex-wrap:nowrap"><input id="cin" aria-label="Type your question" placeholder="Ask about hours, pickup…"><button class="btn">Send</button></form>
+</section>
+
+<footer>
+  <p><b>PHARMA-SEE Community Pharmacy</b> · 0968 731 598 · Mon–Sat 8:00 AM – 8:00 PM · Sun 9:00 AM – 5:00 PM</p>
+  <p>Chat with Ante for instant help.</p>
+  <p><a href="#about">Privacy policy</a> · © 2026 PHARMA-SEE · Hosted as a static site on GitHub Pages</p>
+  <p class="meta">Pharma-See is a demonstration website. It does not provide medical diagnosis or replace advice from a licensed pharmacist or physician.</p>
+</footer>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const peso=n=>'₱'+Number(n).toFixed(2);
+const CATS={PR:'Pain Relievers',AB:'Antibacterials',AD:'Antidiarrheals',AA:'Antacids',FS:'Food Supplements',VT:'Vitamins'};
+const DESC={PR:'Relieves pain and fever.',AB:'Antibacterial medicine. Prescription required.',AD:'Helps control loose stools.',AA:'Relieves heartburn and acid indigestion.',FS:'Daily food supplement.',VT:'Daily vitamin support.'};
+const RAW=`PR|Biogesic Tab|Paracetamol|500 mg|Tablet|5|In Stock|BGS-2024-0891|03/2029|biogesic
+PR|Medicol 200|Ibuprofen|200 mg|Softgel|7|Low Stock|MED-200-5412|07/2028|medicol
+PR|Medicol 400|Ibuprofen|400 mg|Softgel|11.5|In Stock|MED-400-8821|11/2029|medicol 400
+PR|Alaxan Xtra|Ibuprofen + Paracetamol|200 mg / 325 mg|Capsule|9.75|In Stock|ALX-904-1123|05/2030|alaxan
+PR|Mefenamic Acid|Mefenamic Acid|500 mg|Capsule|12|Out of Stock|MEF-500-3310|09/2028|mefenamic
+AB|Amoxicillin|Amoxicillin|500 mg|Capsule|10|In Stock|AMX-500-7214|02/2029|amoxicillin
+AB|Cefixime|Cefixime|200 mg|Capsule|60|Low Stock|CFX-200-1109|06/2028|cefixime
+AB|Azithromycin|Azithromycin|500 mg|Tablet|85|In Stock|AZT-500-6022|12/2029|Azithromycin
+AB|Cefuroxime|Cefuroxime Axetil|500 mg|Tablet|55|In Stock|CFU-500-4187|04/2030|Cefuroxime
+AB|Cotrimoxazole|Sulfamethoxazole + Trimethoprim|800 mg / 160 mg|Tablet|15|Out of Stock|CTX-800-2951|01/2029|Cotrimoxazole
+AD|Diatabs|Loperamide HCl|2 mg|Capsule|8|In Stock|DTB-002-8374|08/2029|Diatabs
+AD|Imodium|Loperamide HCl|2 mg|Capsule|18|In Stock|IMD-002-1940|10/2028|Imodium
+AD|Lomotil|Diphenoxylate HCl + Atropine Sulfate|2.5 mg / 0.025 mg|Tablet|21|Low Stock|LMT-250-7033|03/2030|Lomotil
+AA|Kremil-S Pink|Aluminum/Magnesium Hydroxide + Simethicone|178 mg / 233 mg / 30 mg|Chewable Tablet|8|In Stock|KRM-PNK-3811|05/2029|Kremil-S Pink
+AA|Kremil-S Advance|Famotidine + Calcium Carbonate + Mg Hydroxide|10 mg / 800 mg / 165 mg|Chewable Tablet|20|In Stock|KRM-ADV-9024|09/2030|Kremil-S Advance
+AA|Gaviscon Plain|Sodium Alginate + Sodium Bicarbonate + Calcium Carbonate|10 mL|Sachet|31|Low Stock|GVS-PLN-5120|02/2028|Gaviscon Plain
+AA|Gaviscon Double Action|Sodium Alginate + Sodium Bicarbonate + Calcium Carbonate|10 mL|Sachet|36|In Stock|GVS-DBL-8841|11/2028|Gaviscon Double Action
+AA|Maalox|Aluminum Hydroxide + Magnesium Hydroxide|200 mg / 200 mg|Chewable Tablet|13|Out of Stock|MLX-200-6392|07/2030|Maalox
+FS|Eyeberry|Bilberry Extract + Lutein|80 mg / 5 mg|Capsule|25|In Stock|EYB-080-1492|04/2029|Eyeberry
+FS|Optein|Lutein + Zeaxanthin|10 mg / 2 mg|Capsule|27|In Stock|OPT-010-8831|12/2028|Optein
+FS|Ginkgo Biloba|Ginkgo Biloba Leaf Extract|120 mg|Capsule|16|In Stock|GKB-120-4091|06/2030|Ginkgo Biloba
+FS|Fish Oil|Omega-3 Fatty Acids|1000 mg|Softgel|14.5|Low Stock|FSH-100-3329|01/2030|Fish Oil
+FS|Lecit E|Lecithin + Vitamin E|1200 mg / 200 IU|Softgel|15|In Stock|LCT-120-7714|08/2029|Lecit E
+VT|Stresstabs|Multivitamins + Iron + B-Complex|High Potency Formula|Tablet|11.5|In Stock|STR-901-5521|10/2029|Stresstabs
+VT|Myra-E|d-Alpha Tocopherol (Vitamin E)|400 IU|Capsule|14|In Stock|MYR-400-2084|03/2028|Myra-E
+VT|Bewell-C|Sodium Ascorbate (Non-Acidic Vitamin C)|500 mg|Capsule|7.5|In Stock|BWC-500-6190|09/2029|Bewell-C
+VT|Lactezin|Lactoferrin + Vitamin E + Zinc|100 mg / 11 IU / 5 mg|Capsule|28|In Stock|LCT-100-9432|05/2028|lactezin`;
+const items=RAW.split('\n').map(l=>{const [c,name,gen,str,form,price,status,batch,exp,img]=l.split('|');return{k:c,cat:CATS[c],name,gen,str,form,price:+price,status,batch,exp,desc:DESC[c],src:'medicine/'+encodeURI(img)+'.jpg',stock:status=='In Stock'?50:status=='Low Stock'?8:0}});
+const PAIRS=[['Biogesic Tab','Generic Paracetamol 500 mg',5,3.5],['Medicol 400','Generic Ibuprofen 400 mg',11.5,8],['Alaxan Xtra','Generic Ibuprofen + Paracetamol',9.75,7],['Imodium','Generic Loperamide 2 mg',18,8],['Kremil-S Pink','Generic Antacid Tablet',8,6],['Bewell-C','Generic Vitamin C 500 mg',7.5,5]];
+const S={cart:{},rem:[],inq:[],orders:[{item:'Biogesic Tab',qty:2,total:10,when:'Sample pickup, 10:00 AM',status:'Ready for Pickup'}]};
+const STAT=['Pending','Ready for Pickup','Completed','Cancelled'];
+const cls=s=>s.split(' ')[0];
+const today=()=>{const t=new Date();t.setMinutes(t.getMinutes()-t.getTimezoneOffset());return t.toISOString().slice(0,10)};
+const fd=d=>d.toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'});
+const ph=e=>{e.onerror=null;e.src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Crect width='10' height='10' fill='%23dbeefc'/%3E%3Cpath d='M3 5h4M5 3v4' stroke='%23008080' stroke-width='.8'/%3E%3C/svg%3E"};
+const find=n=>items.find(i=>i.name==n);
+
+/* Router */
+const VIEWS=['home','dashboard','admin','catalog','tools','about','contact'];
+function route(){const id=VIEWS.includes(location.hash.slice(1))?location.hash.slice(1):'home';
+ VIEWS.forEach(v=>$('#'+v).hidden=v!=id);
+ $$('nav a').forEach(a=>{const on=a.hash=='#'+id;a.classList.toggle('on',on);on?a.setAttribute('aria-current','page'):a.removeAttribute('aria-current')});
+ $('nav').classList.remove('open');$('#menu').setAttribute('aria-expanded','false');scrollTo(0,0);$('#'+id+' h1').focus({preventScroll:true});
+ if(id=='dashboard')drawDash();if(id=='admin')drawAdmin();}
+addEventListener('hashchange',route);
+
+/* Theme + menu */
+function setTheme(t){document.documentElement.dataset.theme=t;$('#theme').textContent=t=='dark'?'☀️':'🌙';$('#theme').setAttribute('aria-label',t=='dark'?'Switch to light mode':'Switch to dark mode');try{localStorage.setItem('ps-theme',t)}catch(e){}}
+$('#theme').onclick=()=>setTheme(document.documentElement.dataset.theme=='dark'?'light':'dark');
+$('#menu').onclick=()=>{const o=$('nav').classList.toggle('open');$('#menu').setAttribute('aria-expanded',o)};
+
+/* Catalog */
+function card(i,x){return `<article class="card"><img class="pimg" src="${i.src}" alt="${i.name} package" loading="lazy" onerror="ph(this)"><h3 style="margin:.5rem 0 0">${i.name}</h3><div class="meta">${i.gen}</div><div class="meta">${i.form} · ${i.str}</div><div class="row" style="justify-content:space-between"><span class="price">${peso(i.price)}</span><span class="badge ${cls(i.status)}">${i.status}</span></div><p class="meta">${i.desc}<br>Batch ${i.batch} · Exp ${i.exp}</p>${i.status=='Out of Stock'?'<p class="meta"><b>Out of stock.</b> Ask Ante for alternatives.</p>':''}<button class="btn" data-add="${x}" ${i.status=='Out of Stock'?'disabled':''}>Add to Cart</button></article>`}
+function drawCat(){const q=$('#q').value.trim().toLowerCase(),st=$('#fs').value,fm=$('#ff').value;
+ const L=items.map((i,x)=>[i,x]).filter(([i])=>(!q||[i.name,i.gen,i.cat].some(t=>t.toLowerCase().includes(q)))&&(!st||i.status==st)&&(!fm||i.form==fm));
+ $('#cards').innerHTML=L.map(([i,x])=>card(i,x)).join('')||'<p>No medicines match. Try another search or ask Ante.</p>';$('#count').textContent=`Showing ${L.length} of ${items.length} medicines`}
+['q','fs','ff'].forEach(id=>$('#'+id).addEventListener('input',drawCat));
+function fillForms(){$('#ff').innerHTML='<option value="">All</option>'+[...new Set(items.map(i=>i.form))].map(f=>`<option>${f}</option>`).join('');$('#a-cat').innerHTML=Object.values(CATS).map(c=>`<option>${c}</option>`).join('')}
+
+/* Cart */
+const total=()=>Object.entries(S.cart).reduce((a,[n,q])=>a+find(n).price*q,0);
+function drawCart(){$('#clist').innerHTML=Object.entries(S.cart).map(([n,q])=>{const i=find(n);return `<li class="crow"><img src="${i.src}" alt="" onerror="ph(this)"><div><b>${n}</b><br><span class="meta">${peso(i.price)} each</span></div><div class="qty"><button data-q="${n}" data-d="-1" aria-label="Decrease ${n}">−</button><span>${q}</span><button data-q="${n}" data-d="1" aria-label="Increase ${n}">+</button></div><button class="x" data-rm="${n}" aria-label="Remove ${n}">✕</button></li>`}).join('')||'<li>Your cart is empty.</li>';
+ $('#csub').textContent=$('#ctotal').textContent=peso(total());$('#badge').textContent=Object.values(S.cart).reduce((a,b)=>a+b,0)}
+function cart(open){$('#drawer').classList.toggle('open',open);$('#drawer').setAttribute('aria-hidden',!open);if(open)$('#v-name').focus()}
+$('#cartBtn').onclick=()=>cart(true);
+document.addEventListener('click',e=>{const t=e.target.closest('button');if(!t)return;
+ if(t.dataset.add){const n=items[t.dataset.add].name;S.cart[n]=(S.cart[n]||0)+1;drawCart();t.textContent='Added ✓';setTimeout(()=>t.textContent='Add to Cart',900)}
+ if(t.dataset.q){const n=t.dataset.q;S.cart[n]=Math.max(1,S.cart[n]+ +t.dataset.d);drawCart()}
+ if(t.dataset.rm){delete S.cart[t.dataset.rm];drawCart()}
+ if(t.dataset.close=='cart')cart(false);
+ if(t.dataset.open=='cart')cart(true);
+ if(t.dataset.open=='chat')chat(true);
+ if(t.dataset.cancel){S.orders[t.dataset.cancel].status='Cancelled';drawDash()}});
+$('#rsv').onsubmit=e=>{e.preventDefault();const er=[],name=$('#v-name').value.trim(),mob=$('#v-mob').value.replace(/[\s-]/g,''),d=$('#v-date').value,tm=$('#v-time').value;
+ if(!Object.keys(S.cart).length)er.push('Add at least one medicine to your cart.');
+ if(!/^[A-Za-zÀ-ɏ.'\- ]{2,}$/.test(name))er.push('Enter your full name (letters only).');
+ if(!/^(\+63|0)9\d{9}$/.test(mob))er.push('Enter a valid mobile number, such as 0912 345 6789.');
+ if(!d)er.push('Choose a pickup date.');else if(d<today())er.push('Pickup date cannot be in the past.');
+ if(!tm)er.push('Choose a pickup time.');
+ $('#v-err').innerHTML=er.join('<br>');if(er.length)return;
+ const when=`${fd(new Date(d+'T00:00'))}, ${tm}`;
+ Object.entries(S.cart).forEach(([n,q])=>S.orders.push({item:n,qty:q,total:find(n).price*q,when,status:'Pending'}));
+ S.cart={};drawCart();e.target.reset();cart(false);$('#done').showModal()};
+$('#doneOk').onclick=()=>{$('#done').close();location.hash='#dashboard'};
+
+/* Dashboards */
+function drawDash(){
+ $('#myres').innerHTML=S.orders.map((o,x)=>`<tr><td>${o.item}</td><td>${o.qty}</td><td>${peso(o.total)}</td><td>${o.when}</td><td>${o.status}</td><td>${o.status=='Pending'?`<button class="btn alt" data-cancel="${x}">Cancel</button>`:''}</td></tr>`).join('');
+ $('#myrem').innerHTML=S.rem.map(r=>`<tr><td>${r.name}</td><td>${r.days}</td><td>${r.next}</td><td>${r.days<=3?'Low supply':'OK'}</td></tr>`).join('')||'<tr><td colspan="4">No reminders yet. Use the Refill Calculator.</td></tr>';
+ const n=S.orders.filter(o=>o.status=='Ready for Pickup').map(o=>`Your reservation for ${o.item} is ready for pickup.`).concat(S.rem.filter(r=>r.days<=3).map(r=>`${r.name} is running low. Plan your refill.`));
+ $('#notes').innerHTML=n.map(t=>`<div class="alert" role="status">${t}</div>`).join('')||'<p class="meta">No new notifications.</p>'}
+function drawAdmin(){
+ const c=S.orders;$('#metrics').innerHTML=[['Total items',items.length],['Low-stock alerts',items.filter(i=>i.status=='Low Stock').length],['Pending reservations',c.filter(o=>o.status=='Pending').length],['Fulfilled',c.length?Math.round(c.filter(o=>o.status=='Completed').length/c.length*100)+'%':'0%']].map(([l,v])=>`<div class="card"><b>${v}</b>${l}</div>`).join('');
+ $('#inv').innerHTML=items.map((i,x)=>`<tr><td><img src="${i.src}" alt="" onerror="ph(this)"></td><td>${i.name}</td><td><select data-e="${x}|cat" aria-label="Category for ${i.name}">${Object.values(CATS).map(k=>`<option ${k==i.cat?'selected':''}>${k}</option>`).join('')}</select></td><td><input type="number" min="0" step="0.01" value="${i.price}" data-e="${x}|price" aria-label="Price for ${i.name}"></td><td><input type="number" min="0" value="${i.stock}" data-e="${x}|stock" aria-label="Stock for ${i.name}"></td><td><select data-e="${x}|status" aria-label="Status for ${i.name}">${['In Stock','Low Stock','Out of Stock'].map(s=>`<option ${s==i.status?'selected':''}>${s}</option>`).join('')}</select></td><td><input value="${i.batch}" data-e="${x}|batch" aria-label="Batch for ${i.name}"></td><td><input value="${i.exp}" data-e="${x}|exp" aria-label="Expiry for ${i.name}"></td></tr>`).join('');
+ $('#ords').innerHTML=c.map((o,x)=>`<tr><td>${o.item}</td><td>${o.qty}</td><td>${peso(o.total)}</td><td>${o.when}</td><td><select data-o="${x}" aria-label="Status for ${o.item}">${STAT.map(s=>`<option ${s==o.status?'selected':''}>${s}</option>`).join('')}</select></td></tr>`).join('');
+ $('#inqs').innerHTML=S.inq.map(q=>`<div class="card" style="margin-bottom:.5rem"><b>${q.from}</b> · ${q.topic}<br>${q.msg}</div>`).join('')||'<p class="meta">No inquiries yet.</p>'}
+document.addEventListener('change',e=>{const t=e.target;
+ if(t.dataset.e){const [x,f]=t.dataset.e.split('|'),i=items[x];i[f]=['price','stock'].includes(f)?+t.value:t.value;
+  if(f=='stock')i.status=i.stock==0?'Out of Stock':i.stock<=10?'Low Stock':'In Stock';
+  if(f=='status'&&i.status=='Out of Stock')i.stock=0;drawAdmin();drawCat()}
+ if(t.dataset.o){S.orders[t.dataset.o].status=t.value;drawAdmin()}});
+$('#addf').onsubmit=e=>{e.preventDefault();const v=id=>$('#a-'+id).value.trim(),er=[];
+ ['name','gen','form','str','batch','exp'].forEach(k=>{if(!v(k))er.push(k)});if(!(+v('price')>=0)||!v('price'))er.push('price');if(v('stock')===''||+v('stock')<0)er.push('stock');
+ $('#a-err').textContent=er.length?'Please complete every field: '+er.join(', ')+'.':'';if(er.length)return;
+ const st=+v('stock'),[y,m]=v('exp').split('-');
+ items.push({cat:v('cat'),name:v('name'),gen:v('gen'),str:v('str'),form:v('form'),price:+v('price'),status:st==0?'Out of Stock':st<=10?'Low Stock':'In Stock',batch:v('batch'),exp:`${m}/${y}`,desc:'Newly added item.',src:v('img')||'medicine/none.jpg',stock:st});
+ e.target.reset();fillForms();drawAdmin();drawCat()};
+
+/* Refill calculator */
+$('#r-start').value=today();
+$('#rf').onsubmit=e=>{e.preventDefault();const nm=$('#r-name').value.trim(),n=+$('#r-dpd').value,u=+$('#r-units').value,sd=$('#r-start').value,t=$('#r-time').value,er=[];
+ if(!nm)er.push('Enter the medicine name.');if(!(n>=1))er.push('Doses per day must be at least 1.');if(!(u>=1))er.push('Units remaining must be at least 1.');if(!sd)er.push('Choose a start date.');if(!t)er.push('Choose a dosing time.');
+ $('#r-err').innerHTML=er.join('<br>');if(er.length){$('#r-out').innerHTML='';return}
+ const days=Math.floor(u/n),run=new Date(sd+'T00:00');run.setDate(run.getDate()+days);
+ const left=Math.max(0,Math.ceil((run-new Date().setHours(0,0,0,0))/864e5)),[h,mi]=t.split(':').map(Number),step=24/n;
+ const sch=Array.from({length:n},(_,k)=>{const hh=(h+k*step)%24,H=Math.floor(hh),M=String(Math.round(mi+(hh-H)*60)%60).padStart(2,'0');return `${(H%12)||12}:${M} ${H<12?'AM':'PM'}`});
+ $('#r-out').innerHTML=`<h3>Results for ${nm}</h3><p>Supply lasts <b>${days} days</b> from the start date. Estimated run-out date: <b>${fd(run)}</b>. Days remaining from today: <b>${left}</b>.</p><p>Daily schedule: ${sch.join(' · ')}</p>${left<=3?'<div class="alert"><b>Low supply:</b> 3 days or less left. Plan your refill now.</div>':''}<button type="button" class="btn alt" id="setrem">Set Reminder</button>`;
+ $('#setrem').onclick=()=>{S.rem.push({name:nm,days:left,next:fd(run)});$('#r-out').insertAdjacentHTML('beforeend','<p class="ok" role="status">Reminder saved to your Customer Dashboard.</p>');$('#setrem').disabled=true}};
+
+/* Price comparison */
+function drawPrice(){const k=$('#srt').value,L=PAIRS.map(p=>({b:p[0],g:p[1],bp:p[2],gp:p[3],s:p[2]-p[3]}));
+ L.sort((a,b)=>k=='save'?b.s-a.s:k=='brand'?a.bp-b.bp:a.gp-b.gp);
+ $('#pt').innerHTML=L.map(r=>`<tr><td>${r.b}</td><td>${r.g}</td><td>${peso(r.bp)}</td><td>${peso(r.gp)}</td><td><b>${peso(r.s)}</b> (${Math.round(r.s/r.bp*100)}%)</td></tr>`).join('')}
+$('#srt').onchange=drawPrice;
+
+/* Contact form */
+$('#cf').onsubmit=e=>{e.preventDefault();const v=id=>$('#c-'+id).value.trim(),er=[],info=v('info');
+ if(v('name').length<2)er.push('Enter your name.');
+ if(!(/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(info)||/^(\+63|0)9\d{9}$/.test(info.replace(/[\s-]/g,''))))er.push('Enter a valid email or mobile number.');
+ if(!v('to'))er.push('Choose a recipient.');if(!v('topic'))er.push('Choose a topic.');if(v('msg').length<5)er.push('Write a short message.');
+ $('#c-err').innerHTML=er.join('<br>');$('#c-ok').textContent='';if(er.length)return;
+ S.inq.push({from:v('name'),topic:v('topic'),msg:v('msg')});e.target.reset();
+ $('#c-ok').textContent='Thank you. Your question has been sent. A pharmacist or Ante will respond during operating hours.'};
+
+/* Ante chat */
+const FAQ=[[/hour|open|close|time/,'We are open Mon–Sat 8:00 AM–8:00 PM and Sun 9:00 AM–5:00 PM.'],[/pick|reserve|how|step/,'Search a medicine, add it to your cart, choose a pickup date and time, then collect it at PHARMA-SEE.'],[/stock|available|alternative|out of/,'Each card shows In Stock, Low Stock, or Out of Stock. For out-of-stock items, leave a message and a pharmacist will suggest alternatives.'],[/prescri|rx|antibiotic/,'Prescription items need a physical or digital prescription at pickup.']];
+function say(t,w){$('#log').insertAdjacentHTML('beforeend',`<div class="m ${w}"></div>`);$('#log').lastChild.textContent=t;$('#log').scrollTop=1e5}
+function chat(o){$('#chat').classList.toggle('open',o);$('#chatBtn').setAttribute('aria-expanded',o);if(o){if(!$('#log').children.length)say('Hi, I am Ante. Ask me about store hours, pickup steps, stock, or prescriptions.','a');$('#cin').focus()}}
+$('#chatBtn').onclick=()=>chat(!$('#chat').classList.contains('open'));
+$('#cform').onsubmit=e=>{e.preventDefault();const t=$('#cin').value.trim();if(!t)return;say(t,'u');$('#cin').value='';
+ const f=FAQ.find(([r])=>r.test(t.toLowerCase()));
+ if(!f)S.inq.push({from:'Ante chat',topic:'Chat question',msg:t});
+ setTimeout(()=>say(f?f[1]:'I passed your question to the pharmacy team. They will reply during operating hours.','a'),350)};
+
+/* Init */
+let th='light';try{th=localStorage.getItem('ps-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}catch(e){}
+setTheme(th);fillForms();drawCat();drawCart();drawPrice();
+$('#v-date').min=$('#r-start').min=today();$('#v-date').min=today();
+route();
+</script>
+</body>
+</html>
