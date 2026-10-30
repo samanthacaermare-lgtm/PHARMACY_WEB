@@ -56,7 +56,10 @@ dialog{border:0;border-radius:16px;padding:1.5rem;max-width:440px;background:var
 #chatBtn{position:fixed;right:1rem;bottom:1rem;z-index:30;border-radius:999px;padding:.8rem 1.1rem}
 #chat{position:fixed;right:1rem;bottom:4.6rem;z-index:30;width:min(340px,calc(100% - 2rem));display:none;flex-direction:column}
 #chat.open{display:flex}#log{height:240px;overflow-y:auto;margin:.5rem 0}
-.m{padding:.4rem .7rem;border-radius:12px;margin:.3rem 0;max-width:88%}.m.a{background:var(--line)}.m.u{background:var(--brand);color:var(--on);margin-left:auto}
+.m{padding:.4rem .7rem;border-radius:12px;margin:.3rem 0;max-width:88%;white-space:pre-line}.m.a{background:var(--line)}.m.u{background:var(--brand);color:var(--on);margin-left:auto}
+#chips{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.5rem}
+.chip{font:inherit;font-size:.85rem;border:2px solid var(--brand);background:transparent;color:var(--brand);border-radius:999px;padding:.1rem .6rem;cursor:pointer}
+.chip:hover{background:var(--brand);color:var(--on)}
 footer{background:var(--card);border-top:1px solid var(--line);padding:1.5rem 1rem 5rem;text-align:center;font-size:.95rem}
 .view[hidden]{display:none}
 @media(max-width:860px){#menu{display:inline-block;margin-left:auto}nav{display:none;width:100%;margin:0}nav.open{display:block}nav ul{flex-direction:column}}
@@ -201,7 +204,8 @@ footer{background:var(--card);border-top:1px solid var(--line);padding:1.5rem 1r
 <section class="card" id="chat" aria-label="Chat with Ante">
   <b>Ante, virtual customer representative</b>
   <div id="log" role="log" aria-live="polite"></div>
-  <form id="cform" class="row" style="flex-wrap:nowrap"><input id="cin" aria-label="Type your question" placeholder="Ask about hours, pickup…"><button class="btn">Send</button></form>
+  <div id="chips"></div>
+  <form id="cform" class="row" style="flex-wrap:nowrap"><input id="cin" aria-label="Type your question" placeholder="Ask about stock, hours, pickup…" autocomplete="off"><button class="btn">Send</button></form>
 </section>
 
 <footer>
@@ -321,7 +325,8 @@ $('#addf').onsubmit=e=>{e.preventDefault();const v=id=>$('#a-'+id).value.trim(),
  ['name','gen','form','str','batch','exp'].forEach(k=>{if(!v(k))er.push(k)});if(!(+v('price')>=0)||!v('price'))er.push('price');if(v('stock')===''||+v('stock')<0)er.push('stock');
  $('#a-err').textContent=er.length?'Please complete every field: '+er.join(', ')+'.':'';if(er.length)return;
  const st=+v('stock'),[y,m]=v('exp').split('-');
- items.push({cat:v('cat'),name:v('name'),gen:v('gen'),str:v('str'),form:v('form'),price:+v('price'),status:st==0?'Out of Stock':st<=10?'Low Stock':'In Stock',batch:v('batch'),exp:`${m}/${y}`,desc:'Newly added item.',src:v('img')||'medicine/none.jpg',stock:st});
+ const catKey=Object.keys(CATS).find(k=>CATS[k]==v('cat'));
+ items.push({k:catKey,cat:v('cat'),name:v('name'),gen:v('gen'),str:v('str'),form:v('form'),price:+v('price'),status:st==0?'Out of Stock':st<=10?'Low Stock':'In Stock',batch:v('batch'),exp:`${m}/${y}`,desc:'Newly added item.',src:v('img')||'medicine/none.jpg',stock:st});
  e.target.reset();fillForms();drawAdmin();drawCat()};
 
 /* Refill calculator */
@@ -351,14 +356,68 @@ $('#cf').onsubmit=e=>{e.preventDefault();const v=id=>$('#c-'+id).value.trim(),er
  $('#c-ok').textContent='Thank you. Your question has been sent. A pharmacist or Ante will respond during operating hours.'};
 
 /* Ante chat */
-const FAQ=[[/hour|open|close|time/,'We are open Mon–Sat 8:00 AM–8:00 PM and Sun 9:00 AM–5:00 PM.'],[/pick|reserve|how|step/,'Search a medicine, add it to your cart, choose a pickup date and time, then collect it at PHARMA-SEE.'],[/stock|available|alternative|out of/,'Each card shows In Stock, Low Stock, or Out of Stock. For out-of-stock items, leave a message and a pharmacist will suggest alternatives.'],[/prescri|rx|antibiotic/,'Prescription items need a physical or digital prescription at pickup.']];
+const HRS={0:[9,17],1:[8,20],2:[8,20],3:[8,20],4:[8,20],5:[8,20],6:[8,20]};
+const DN=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const f12=h=>`${(h+11)%12+1}:00 ${h<12?'AM':'PM'}`;
+function openNow(){const n=new Date(),h=HRS[n.getDay()],t=n.getHours()+n.getMinutes()/60;
+ if(t>=h[0]&&t<h[1])return `We are open now until ${f12(h[1])}.`;
+ for(let i=0;i<7;i++){const d=(n.getDay()+i)%7,o=HRS[d];
+  if(i>0||t<o[0])return `We are closed right now. We open ${i==0?'today':i==1?'tomorrow':DN[d]} at ${f12(o[0])}.`}}
+
+/* Medicine lookup: brand name, generic name, or category */
+const SKIP=/^(sodium|calcium|magnesium|aluminum|hydroxide|extract|sulfate|vitamin|multivitamins|omega-3|fatty|acids|axetil)$/;
+function meds(t){
+ const a=items.filter(i=>t.includes(i.name.toLowerCase().split(/[ -]/)[0]));if(a.length)return a;
+ const g=items.filter(i=>i.gen.toLowerCase().split(/[^a-z0-9-]+/).some(w=>w.length>=6&&!SKIP.test(w)&&t.includes(w)));if(g.length)return g;
+ const c=[[/antibio|antibacterial/,'AB'],[/pain|fever|headache/,'PR'],[/diarrhea|loose stool|\blbm\b/,'AD'],[/antacid|heartburn|acid reflux/,'AA'],[/supplement|lutein/,'FS'],[/vitamin/,'VT']].find(([r])=>r.test(t));
+ return c?items.filter(i=>i.k==c[1]):[]}
+const medLine=i=>`• ${i.name} (${i.gen}, ${i.str}): ${i.status}, ${peso(i.price)}${i.k=='AB'?'. Prescription required':''}`;
+function medReply(L){
+ let r=L.slice(0,5).map(medLine).join('\n')+(L.length>5?`\n…and ${L.length-5} more. See Search & Reserve for the full list.`:'');
+ const out=L.filter(i=>i.status=='Out of Stock');
+ if(out.length&&L.length<=3){const alt=items.filter(i=>i.status!='Out of Stock'&&out.some(o=>o.k==i.k&&o.name!=i.name)).slice(0,3);
+  if(alt.length)r+=`\n\nSame category, available now: ${alt.map(a=>a.name).join(', ')}. Please ask our pharmacist before switching.`}
+ if(L.some(i=>i.status!='Out of Stock'))r+='\n\nTo reserve, tap Add to Cart in Search & Reserve.';
+ return r}
+
+function hand(q){S.inq.push({from:'Ante chat',topic:'Chat question',msg:q})}
+
+const URGENT=[/emergency|overdose|chest pain|can.?t breathe|difficulty breathing|poison|severe allergic|faint|seizure/,
+ ()=>'This sounds urgent. Please call your local emergency services or go to the nearest hospital right now. Do not wait for the pharmacy to reply.'];
+const ADVICE=[/\bdose\b|dosage|how many (tablet|capsule|pill)|how often|side effect|interact|pregnan|breastfe|safe to take|can i take|symptom|diagnos/,
+ q=>{hand(q);return 'I cannot give medical advice, dosing, or diagnosis. I sent your question to our pharmacist, who will reply during operating hours. For anything urgent, please call us or see a doctor.'}];
+const INT=[
+ [/^(hi|hello|hey|good (morning|afternoon|evening))\b/,()=>'Hello! I am Ante. I can check medicine stock and prices, explain reservations, and share store hours. What do you need?'],
+ [/thank/,()=>'You are welcome! Anything else I can help with?'],
+ [/my (order|reservation)|status|track|ready/,()=>{const o=S.orders.slice(-3);
+   return o.length?'Your latest reservations:\n'+o.map(x=>`• ${x.item} x${x.qty}: ${x.status} (${x.when})`).join('\n')+'\n\nOpen the Customer Dashboard to see all of them.':'You have no reservations yet. Search for a medicine and tap Add to Cart to start.'}],
+ [/pick ?up|reserv|how (do|to)|step|cart|order/,()=>'1. Search a medicine in Search & Reserve.\n2. Check stock and the exact price.\n3. Add to Cart, then enter your name, mobile number, and pickup date and time.\n4. Collect it at PHARMA-SEE. The pharmacy confirms availability.\n\n'+openNow()],
+ [/hour|open|close|schedule|what time/,()=>`${openNow()}\nMon–Sat: 8:00 AM – 8:00 PM\nSun: 9:00 AM – 5:00 PM`],
+ [/prescri|\brx\b/,()=>'Prescription items, such as antibiotics, need a physical or digital prescription at pickup. Over-the-counter items do not.'],
+ [/cheaper|generic|brand|saving|\bsave\b|compar/,()=>'Generic options can cost less. Examples:\n'+[...PAIRS].sort((a,b)=>(b[2]-b[3])-(a[2]-a[3])).slice(0,3).map(p=>`• ${p[0]} ${peso(p[2])} vs ${p[1]} ${peso(p[3])}: save ${peso(p[2]-p[3])}`).join('\n')+'\n\nSee Refill & Price Tools for the full table.'],
+ [/refill|remind|run out|supply/,()=>'Open Refill & Price Tools, enter doses per day and units left, and I will show your run-out date. You can save it as a reminder on your dashboard.'],
+ [/stock|available|availab|alternative|out of/,()=>{const c=s=>items.filter(i=>i.status==s).length;
+   return `Right now: ${c('In Stock')} in stock, ${c('Low Stock')} low, ${c('Out of Stock')} out of ${items.length} medicines.\nType a medicine name (for example Biogesic or amoxicillin) and I will check it.`}],
+ [/price|how much|cost/,()=>'Prices are fixed and shown on each medicine card. Tell me the medicine name and I will give you its price.'],
+ [/where|location|address|direction|find you/,()=>'We are at 2F, "Dili Na Malimutan" Building, Purok 5, Barangay Buhangin, Davao City.'],
+ [/phone|call|contact|email|number|talk|speak|human|pharmacist|staff/,()=>`You can call 0968 731 598. ${openNow()}\nOr use the Contact page to message a pharmacist.`]];
+
+function answer(q){const t=q.toLowerCase();
+ if(URGENT[0].test(t))return URGENT[1]();
+ if(ADVICE[0].test(t))return ADVICE[1](q);
+ const m=meds(t);if(m.length)return medReply(m);
+ const f=INT.find(([r])=>r.test(t));if(f)return f[1](q);
+ hand(q);return 'I am not sure about that, so I passed your question to the pharmacy team. They will reply during operating hours. You can also call 0968 731 598.'}
+
+const CHIPS=['Check stock','Store hours','How to reserve','Prescriptions','Cheaper options','My reservations','Talk to pharmacist'];
 function say(t,w){$('#log').insertAdjacentHTML('beforeend',`<div class="m ${w}"></div>`);$('#log').lastChild.textContent=t;$('#log').scrollTop=1e5}
-function chat(o){$('#chat').classList.toggle('open',o);$('#chatBtn').setAttribute('aria-expanded',o);if(o){if(!$('#log').children.length)say('Hi, I am Ante. Ask me about store hours, pickup steps, stock, or prescriptions.','a');$('#cin').focus()}}
+function ask(t){say(t,'u');setTimeout(()=>say(answer(t),'a'),350)}
+function chat(o){$('#chat').classList.toggle('open',o);$('#chatBtn').setAttribute('aria-expanded',o);
+ if(o){if(!$('#log').children.length){say('Hi, I am Ante. Ask about a medicine, store hours, pickup, or prescriptions, or tap a button below.','a');
+  $('#chips').innerHTML=CHIPS.map(c=>`<button type="button" class="chip">${c}</button>`).join('')}$('#cin').focus()}}
+$('#chips').onclick=e=>{const b=e.target.closest('button');if(b)ask(b.textContent)};
 $('#chatBtn').onclick=()=>chat(!$('#chat').classList.contains('open'));
-$('#cform').onsubmit=e=>{e.preventDefault();const t=$('#cin').value.trim();if(!t)return;say(t,'u');$('#cin').value='';
- const f=FAQ.find(([r])=>r.test(t.toLowerCase()));
- if(!f)S.inq.push({from:'Ante chat',topic:'Chat question',msg:t});
- setTimeout(()=>say(f?f[1]:'I passed your question to the pharmacy team. They will reply during operating hours.','a'),350)};
+$('#cform').onsubmit=e=>{e.preventDefault();const t=$('#cin').value.trim();if(!t)return;$('#cin').value='';ask(t)};
 
 /* Init */
 let th='light';try{th=localStorage.getItem('ps-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}catch(e){}
